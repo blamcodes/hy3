@@ -901,7 +901,19 @@ void Hy3Layout::shiftWindow(
 	auto* node = this->getWorkspaceFocusedNode(workspace);
 	if (node == nullptr) return;
 
-	this->shiftNode(*node, direction, once, visible);
+	auto* target = this->shiftOrGetFocus(*node, direction, false, false, visible);
+	if (target != nullptr) {
+		bool warp = false;
+		/*if (warp) {*/
+		/*	// don't warp for nodes in the same tab*/
+		/*	warp = node->parent == nullptr || target->parent == nullptr || node->parent != target->parent*/
+		/*	    || node->parent->data.as_group().layout != Hy3GroupLayout::Tabbed;*/
+		/*}*/
+
+		target->focus(warp);
+		while (target->parent != nullptr) target = target->parent;
+		target->recalcSizePosRecursive();
+	}
 }
 
 void Hy3Layout::shiftFocus(
